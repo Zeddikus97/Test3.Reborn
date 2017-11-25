@@ -43,12 +43,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="APEModel\Classes\AutomaticPhoneExchange.cs" />
+    <Compile Include="APEModel\Classes\CallConnection.cs" />
+    <Compile Include="APEModel\Classes\Contract.cs" />
+    <Compile Include="APEModel\Classes\Port.cs" />
+    <Compile Include="APEModel\Classes\Terminal.cs" />
+    <Compile Include="APEModel\Enums\PortStatus.cs" />
+    <Compile Include="BillingSystemModel\Classes\BillingSystem.cs" />
+    <Compile Include="BillingSystemModel\Classes\CallRecord.cs" />
+    <Compile Include="BillingSystemModel\Classes\ConversationRecord.cs" />
+    <Compile Include="BillingSystemModel\Interfaces\ICallRecord.cs" />
+    <Compile Include="BillingSystemModel\Interfaces\IConversationRecord.cs" />
+    <Compile Include="NewEventArgs\CallEventArgs.cs" />
+    <Compile Include="NewEventArgs\EndCallEventArgs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Project3.BillingSystemModel.CallRecord" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="5.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAABAAEAAAAAAAA=</HashCode>
+      <FileName>BillingSystemModel\Classes\CallRecord.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Project3.BillingSystem" Collapsed="true">
+    <Position X="7.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BillingSystemModel\Classes\BillingSystem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Project3.BillingSystemModel.ConversationRecord" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="7.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAABAAAAAAAAAAAAAAAABAAEAAAAAAAA=</HashCode>
+      <FileName>BillingSystemModel\Classes\ConversationRecord.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Project3.AutomaticPhoneExchange" Collapsed="true">
+    <Position X="5.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAAAQAAAIAgAAAAAAAAA=</HashCode>
+      <FileName>APEModel\Classes\AutomaticPhoneExchange.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Project3.NewEventArgs.CallEventArgs" Collapsed="true">
+    <Position X="9.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>NewEventArgs\CallEventArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Project3.BillingSystemModel.Interfaces.IConversationRecord" Collapsed="true">
+    <Position X="3.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BillingSystemModel\Interfaces\IConversationRecord.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Project3.BillingSystemModel.Interfaces.ICallRecord" Collapsed="true">
+    <Position X="3.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAABAAEAAAAAAAA=</HashCode>
+      <FileName>BillingSystemModel\Interfaces\ICallRecord.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
