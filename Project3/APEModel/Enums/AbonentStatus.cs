@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace Project3.APEModel.Enums
 {
-    enum PortStatus
+    enum AbonentStatus
     {
-        Available = 0,
-        IncomingCall,
-        Busy,
-        DisconnectedFromTerminal,
-        Unavailable
+        ReadyToConnect, 
+        Abandoned
     }
 }

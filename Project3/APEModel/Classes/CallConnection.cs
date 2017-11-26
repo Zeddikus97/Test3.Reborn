@@ -12,5 +12,12 @@ namespace Project3.APEModel.Classes
         public string OutgoingPhoneNumber { get; private set; }
         public string ReceivingPhoneNumber { get; private set; }
         public DateTime Date { get; private set; }
+
+        public CallConnection(string outgoingPhoneNumber, string receivingPhoneNumber, DateTime date)
+        {
+            OutgoingPhoneNumber = outgoingPhoneNumber;
+            ReceivingPhoneNumber = receivingPhoneNumber;
+            Date = date;
+        }
     }
 }

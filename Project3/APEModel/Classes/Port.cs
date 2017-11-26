@@ -11,6 +11,7 @@ namespace Project3.APEModel.Classes
     class Port
     {
         private PortStatus _portStatus;
+        public AbonentStatus ResponseStatus { get; set; }
 
         public Port(PortStatus portStatus)
         {
@@ -18,8 +19,8 @@ namespace Project3.APEModel.Classes
         }
 
         public event EventHandler<CallEventArgs> CallConnectEvent;
-        public event EventHandler<CallEventArgs> TakeCallConnectEvent;
-        public event EventHandler<CallEventArgs> EndCallConnectEvent;
+        public event EventHandler<IncomingCallEventArgs> TakeCallConnectEvent;
+        public event EventHandler<EndCallEventArgs> EndCallConnectEvent;
 
         public PortStatus GetPortStatus()
         {
@@ -28,9 +29,12 @@ namespace Project3.APEModel.Classes
 
         public void ConnectToTerminal(Terminal terminal)
         {
-            if (_portStatus == PortStatus.DisconnectFromTerminal)
+            if (_portStatus == PortStatus.DisconnectedFromTerminal)
             {
                 terminal.CallEvent += CallConnectToATE;
+                terminal.EndCallEvent += EndCallConnectEvent;
+                terminal.ResponseToCallEvent += ResponseToCall;
+                _portStatus = PortStatus.Available;
             }
 
         }
@@ -40,20 +44,33 @@ namespace Project3.APEModel.Classes
             _portStatus = status;
         }
 
+        private void ChangeResponse(AbonentStatus status)
+        {
+            ResponseStatus = status;
+        }
+
         public void DisconnectFromTerminal(Terminal terminal)
         {
             if (_portStatus == PortStatus.Available)
             {
                 terminal.CallEvent -= CallConnectToATE;
+                terminal.EndCallEvent -= EndCallConnectEvent;
+                terminal.ResponseToCallEvent -= ResponseToCall;
+                _portStatus = PortStatus.DisconnectedFromTerminal;
             }
         }
 
         protected virtual void RaiseCallConnectEvent(string outgoingPhoneNumber, string receivingPhoneNumber)
         {
+            CallConnectEvent?.Invoke(this, new CallEventArgs(outgoingPhoneNumber, receivingPhoneNumber));
+        }
+
+        protected virtual void RaiseTakeCallConnectEvent(string outgoingPhoneNumber)
+        {
             if (CallConnectEvent != null)
             {
-                ChangePortStatus(PortStatus.Busy);
-                CallConnectEvent(this, new CallEventArgs(outgoingPhoneNumber, receivingPhoneNumber));
+                ChangePortStatus(PortStatus.IncomingCall);
+                TakeCallConnectEvent(this, new IncomingCallEventArgs(outgoingPhoneNumber));
             }
         }
 
@@ -62,9 +79,14 @@ namespace Project3.APEModel.Classes
             RaiseCallConnectEvent(e.OutgoingPhoneNumber, e.ReceivingPhoneNumber);
         }
 
-        public void AnswerCallConnect(string incomingNumber)
+        private void ResponseToCall(object sender, ResponseStateEventArgs e)
         {
-            RaiseAnswerCallEvent(incomingNumber);
+            ChangeResponse(e.Status);
+        }
+
+        public void CallConnectToTerminal(string incomingNumber)
+        {
+            RaiseTakeCallConnectEvent(incomingNumber);
         }
     }
 }

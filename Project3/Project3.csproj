@@ -48,6 +48,7 @@
     <Compile Include="APEModel\Classes\Contract.cs" />
     <Compile Include="APEModel\Classes\Port.cs" />
     <Compile Include="APEModel\Classes\Terminal.cs" />
+    <Compile Include="APEModel\Enums\AbonentStatus.cs" />
     <Compile Include="APEModel\Enums\PortStatus.cs" />
     <Compile Include="BillingSystemModel\Classes\BillingSystem.cs" />
     <Compile Include="BillingSystemModel\Classes\CallRecord.cs" />
@@ -56,6 +57,8 @@
     <Compile Include="BillingSystemModel\Interfaces\IConversationRecord.cs" />
     <Compile Include="NewEventArgs\CallEventArgs.cs" />
     <Compile Include="NewEventArgs\EndCallEventArgs.cs" />
+    <Compile Include="NewEventArgs\IncomingCallEventArgs.cs" />
+    <Compile Include="NewEventArgs\ResponseStateEventArgs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
