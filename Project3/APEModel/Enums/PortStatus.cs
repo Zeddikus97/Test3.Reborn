@@ -8,7 +8,7 @@ namespace Project3.APEModel.Enums
 {
     enum PortStatus
     {
-        Available = 0,
+        Available,
         IncomingCall,
         Busy,
         DisconnectedFromTerminal,

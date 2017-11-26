@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Project3.NewEventArgs
 {
-    class ResponseToCallEventArgs
+    class ResponseToCallEventArgs : EventArgs
     {
         public AbonentStatus Status { get; private set; }
 

@@ -10,12 +10,28 @@ namespace Project3
 {
     class BillingSystem : ICollection<ICallRecord>
     {
+        private ICollection<ICallRecord> _records = new List<ICallRecord>();
+
+        public string GetIncomingCallsHistory()
+        {
+            return String.Join("\n", _records.Select(x => "from " + x.ReceivingPhoneNumber + " // " + x.ToString(true)));
+        }
+
+        public string GetOutgoingCallsHistory()
+        {
+            return String.Join("\n", _records.Select(x => "from " + x.OutgoingPhoneNumber + " // " + x.ToString(false)));
+        }
+
+        public void Clear()
+        {
+            _records.Clear();
+        }
 
         public int Count
         {
             get
             {
-                throw new NotImplementedException();
+                return _records.Count;
             }
         }
 
@@ -23,43 +39,39 @@ namespace Project3
         {
             get
             {
-                throw new NotImplementedException();
+                return _records.IsReadOnly;
             }
         }
 
         public void Add(ICallRecord item)
         {
-            throw new NotImplementedException();
+            _records.Add(item);
         }
 
-        public void Clear()
-        {
-            throw new NotImplementedException();
-        }
 
         public bool Contains(ICallRecord item)
         {
-            throw new NotImplementedException();
+            return _records.Contains(item);
         }
 
         public void CopyTo(ICallRecord[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            _records.CopyTo(array, arrayIndex);
         }
 
         public IEnumerator<ICallRecord> GetEnumerator()
         {
-            throw new NotImplementedException();
+            return _records.GetEnumerator();
         }
 
         public bool Remove(ICallRecord item)
         {
-            throw new NotImplementedException();
+            return _records.Remove(item);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return this.GetEnumerator();
         }
     }
 }

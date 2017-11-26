@@ -9,5 +9,6 @@ namespace Project3.BillingSystemModel.Interfaces
     interface IConversationRecord : ICallRecord
     {
         TimeSpan Duration { get; }
+        decimal Cost { get; }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Project3.NewEventArgs
 {
-    class MessageEventArgs
+    class MessageEventArgs : EventArgs
     {
         public string Message { get; private set; }
 

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Project3.NewEventArgs
 {
-    class IncomingCallEventArgs
+    class RequestEventArgs : EventArgs, IRequestEventArgs
     {
         public string OutgoingPhoneNumber { get; private set; }
 
-        public IncomingCallEventArgs(string outgoingphonenumber)
+        public RequestEventArgs(string outgoingphonenumber)
         {
             OutgoingPhoneNumber = outgoingphonenumber;
         }

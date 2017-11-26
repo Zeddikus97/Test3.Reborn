@@ -11,5 +11,7 @@ namespace Project3.BillingSystemModel.Interfaces
         string OutgoingPhoneNumber { get; }
         string ReceivingPhoneNumber { get; }
         DateTime Date { get;  }
+
+        string ToString(bool value);
     }
 }

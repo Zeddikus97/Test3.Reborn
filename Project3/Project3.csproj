@@ -44,9 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="APEModel\Classes\AutomaticPhoneExchange.cs" />
-    <Compile Include="APEModel\Classes\CallConnection.cs" />
     <Compile Include="APEModel\Classes\Contract.cs" />
     <Compile Include="APEModel\Classes\Port.cs" />
+    <Compile Include="APEModel\Classes\Rate.cs" />
     <Compile Include="APEModel\Classes\Terminal.cs" />
     <Compile Include="APEModel\Enums\AbonentStatus.cs" />
     <Compile Include="APEModel\Enums\PortStatus.cs" />
@@ -56,9 +56,11 @@
     <Compile Include="BillingSystemModel\Interfaces\ICallRecord.cs" />
     <Compile Include="BillingSystemModel\Interfaces\IConversationRecord.cs" />
     <Compile Include="NewEventArgs\CallEventArgs.cs" />
-    <Compile Include="NewEventArgs\EndCallEventArgs.cs" />
-    <Compile Include="NewEventArgs\IncomingCallEventArgs.cs" />
+    <Compile Include="NewEventArgs\ChangeRateEventArgs.cs" />
+    <Compile Include="NewEventArgs\IRequestEventArgs.cs" />
+    <Compile Include="NewEventArgs\RequestEventArgs.cs" />
     <Compile Include="NewEventArgs\MessageEventArgs.cs" />
+    <Compile Include="NewEventArgs\ReiseBalanceEventArgs.cs" />
     <Compile Include="NewEventArgs\ResponseToCallEventArgs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -67,7 +69,6 @@
     <None Include="App.config" />
     <None Include="ClassDiagram1.cd" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

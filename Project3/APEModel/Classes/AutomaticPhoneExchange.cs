@@ -1,5 +1,6 @@
 ﻿using Project3.APEModel.Classes;
 using Project3.APEModel.Enums;
+using Project3.BillingSystemModel;
 using Project3.NewEventArgs;
 using System;
 using System.Collections.Generic;
@@ -13,51 +14,117 @@ namespace Project3.APEModel.Classes
     {
         private ICollection<Port> _freePorts = new List<Port>();
         private IDictionary<Contract, Port> _contracts = new Dictionary<Contract, Port>();
-        private ICollection<CallConnection> _connections = new List<CallConnection>();
+        private ICollection<CallRecord> _connections = new List<CallRecord>();
+        private ICollection<Rate> _rateTypes = new List<Rate>();
+        public BillingSystem ThisBillingSystem { get; private set; }
 
+        public AutomaticPhoneExchange(BillingSystem billingsystem)
+        {
+            ThisBillingSystem = billingsystem;
+        }
 
         private void CreateCallConnection(object sender, CallEventArgs e)
         {
-            Console.WriteLine("ixhto");
-            if (_contracts.Keys.Select(x=>x.Number).Contains(e.ReceivingPhoneNumber))
-            {               
+            if (e.ReceivingPhoneNumber==e.OutgoingPhoneNumber)
+            {
+                if (sender is Port) (sender as Port).MessageToTerminal("Connection failed");
+            }
+            else if (_contracts.Keys.Select(x=>x.Number).Contains(e.ReceivingPhoneNumber))
+            {
+                var connection = new CallRecord(e.OutgoingPhoneNumber, e.ReceivingPhoneNumber, DateTime.Now);
                 Port receivingPort = _contracts[_contracts.Keys.Where(x => x.Number == e.ReceivingPhoneNumber).First()];
-                if (receivingPort.GetPortStatus()==PortStatus.Available)
+                if (!(_contracts.Keys.Where(x => x.Number == e.ReceivingPhoneNumber).First().Balance>0))
+                {
+                    if (sender is Port) (sender as Port).MessageToTerminal("You doesn't have enough money. Please, reise the balance.");
+                }                  
+                else if (receivingPort.GetPortStatus()==PortStatus.Available)
                 {
                     receivingPort.CallConnectToTerminal(e.OutgoingPhoneNumber);
                     if (receivingPort.ResponseStatus == AbonentStatus.ReadyToConnect)
                     {
                         _contracts[_contracts.Keys.Where(x => x.Number == e.OutgoingPhoneNumber).First()].ChangePortStatus(PortStatus.Busy);
                         _contracts[_contracts.Keys.Where(x => x.Number == e.ReceivingPhoneNumber).First()].ChangePortStatus(PortStatus.Busy);
-                        _connections.Add(new CallConnection(e.OutgoingPhoneNumber, e.ReceivingPhoneNumber, DateTime.Now));
-                        Console.WriteLine(String.Join(" ", e.OutgoingPhoneNumber + e.ReceivingPhoneNumber + DateTime.Now));
+                        _connections.Add(connection);
                     }
                 }                
                 else if (receivingPort.GetPortStatus() == PortStatus.Busy || receivingPort.GetPortStatus() == PortStatus.IncomingCall)
                 {
-                    if (sender is Port) (sender as Port).MessageToTerminal("Subscriber with this number is busy now");                    
+                    if (sender is Port) (sender as Port).MessageToTerminal("Subscriber with this number is busy now");
+                    AddCallRecord(connection);
                 }
                 else if (receivingPort.GetPortStatus() == PortStatus.DisconnectedFromTerminal)
                 {
                     if (sender is Port) (sender as Port).MessageToTerminal("Subscriber with this number is disconnected now");
+                    AddCallRecord(connection);
                 }
             }
             else
             {
-                if (sender is Port) (sender as Port).MessageToTerminal("Subscriber with this number doesn't exist");
+                if (sender is Port) (sender as Port).MessageToTerminal("Subscriber with this number doesn't exist");          
             }
         }
 
-        public void BreakCallConnection(object sender, EndCallEventArgs e)
+        private void BreakCallConnection(object sender, RequestEventArgs e)
         {
             if (_connections.Select(x=>x.OutgoingPhoneNumber).Contains(e.OutgoingPhoneNumber)||_connections.Select(x => x.ReceivingPhoneNumber).Contains(e.OutgoingPhoneNumber))
             {
-                _connections.Where(x => x.OutgoingPhoneNumber == e.OutgoingPhoneNumber||x.ReceivingPhoneNumber == e.OutgoingPhoneNumber)
-
-                /*_contracts[_contracts.Keys.Where(x => x.Number == e.OutgoingPhoneNumber).First()].ChangePortStatus(PortStatus.Available);
-                _contracts[_contracts.Keys.Where(x => x.Number == e.ReceivingPhoneNumber).First()].ChangePortStatus(PortStatus.Available);*/
+                var connection = _connections.Where(x => x.OutgoingPhoneNumber== e.OutgoingPhoneNumber || x.ReceivingPhoneNumber == e.OutgoingPhoneNumber).First();
+                var cost = _contracts.Keys.Where(x => x.Number == e.OutgoingPhoneNumber).First().ChangeBalance(DateTime.Now - connection.Date);
+                ThisBillingSystem.Add(new ConversationRecord(connection.OutgoingPhoneNumber, connection.ReceivingPhoneNumber, connection.Date, DateTime.Now - connection.Date, cost));
+                Console.WriteLine(ThisBillingSystem.GetIncomingCallsHistory());
+                _contracts[_contracts.Keys.Where(x => x.Number == connection.ReceivingPhoneNumber).First()].ChangePortStatus(PortStatus.Available);
+                if (_contracts[_contracts.Keys.Where(x => x.Number == connection.OutgoingPhoneNumber).First()].GetPortStatus() != PortStatus.DisconnectedFromTerminal)
+                {
+                    _contracts[_contracts.Keys.Where(x => x.Number == connection.OutgoingPhoneNumber).First()].ChangePortStatus(PortStatus.Available);
+                }
+                _connections.Remove(connection);              
             }
+        }
 
+        private void GetRateInformation(object sender, EventArgs e)
+        {
+            if (sender is Port) (sender as Port).MessageToTerminal(String.Join("\n", _rateTypes.Select(x => x.Name + ": first minute - " + x.CostFirstMinute + ", other minutes - " + x.CostPerMinute)));
+        }
+
+        private void ChangeContractRate(object sender, ChangeRateEventArgs e)
+        {
+            Rate rateForChange=null;
+            int index=0;
+            foreach (var rate in _rateTypes)
+            {
+                if (rate.Name == e.Rate || rate.Name.ToLower() == e.Rate || index.ToString() == e.Rate) rateForChange = rate;
+                index++;
+            }
+            if (rateForChange != null)
+            {
+                var contract = _contracts.Keys.Where(x => x.Number == e.OutgoingPhoneNumber).First();
+                if (contract.RateChangeDate.Year != DateTime.Now.Year || contract.RateChangeDate.Month - DateTime.Now.Month < -1 || contract.RateChangeDate.Day == DateTime.Now.Day - 1 || (contract.RateChangeDate.Month == 2 && DateTime.Now.Day > 28))
+                {
+                    _contracts.Keys.Where(x => x.Number == e.OutgoingPhoneNumber).First().RateChange(rateForChange);
+                }
+                else if (sender is Port) (sender as Port).MessageToTerminal("Less than a month since the last tariff change");
+            }
+            else if (sender is Port) (sender as Port).MessageToTerminal("This rate doesn't exist");
+        }
+
+        private void ReiseBalance(object sender, ReiseBalanceEventArgs e)
+        {
+            _contracts.Keys.Where(x => x.Number == e.OutgoingPhoneNumber).First().ChangeBalance(e.Money);
+        }
+
+        private void AddCallRecord(CallRecord item)
+        {
+           ThisBillingSystem.Add(item);
+        }       
+
+        public void AddNewRate(string name, decimal costFirstMinute, decimal costPerMinute)
+        {
+            if (!_rateTypes.Select(x => x.Name).Contains(name)) _rateTypes.Add(new Rate(name, costFirstMinute, costPerMinute));
+        }
+
+        public void AddNewRate(Rate rate)
+        {
+            if (!_rateTypes.Select(x => x.Name).Contains(rate.Name)) _rateTypes.Add(rate);
         }
 
         public void AddNewPort()
@@ -65,22 +132,25 @@ namespace Project3.APEModel.Classes
             Port newPort = new Port(PortStatus.DisconnectedFromTerminal);
             newPort.CallConnectEvent += CreateCallConnection;
             newPort.EndCallConnectEvent += BreakCallConnection;
+            newPort.GetRateInfoConnectEvent += GetRateInformation;
+            newPort.ReiseBalanceConnectEvent += ReiseBalance;
+            newPort.ChangeRateConnectEvent += ChangeContractRate;
             _freePorts.Add(newPort);
         }
 
-        public Terminal CreateNewTerminal(string number)
+        public Terminal CreateNewTerminal(string number, Contract contract)
         {
             AddNewPort();
             var term = new Terminal(number, _freePorts.First());
-            _contracts.Add(ConcludeContract(number), _freePorts.First());
+            _contracts.Add(contract, _freePorts.First());
             _freePorts.Remove(_freePorts.First());
             return term;
         }
 
-        public Contract ConcludeContract(string number)
+        public Terminal ConcludeContract(string name, string number, decimal balance, Rate rate)
         {
-            Contract newContract = new Contract("vasya", number);
-            return newContract;           
+            Contract newContract = new Contract(name, number, balance, DateTime.Now, rate);
+            return CreateNewTerminal(number, newContract);    
         }
     }
 }

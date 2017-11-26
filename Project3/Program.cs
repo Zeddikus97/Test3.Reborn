@@ -11,15 +11,24 @@ namespace Project3
     {
         static void Main(string[] args)
         {
-            AutomaticPhoneExchange ATE = new AutomaticPhoneExchange();
-            Terminal t1 = ATE.CreateNewTerminal("01");
-            Terminal t2 = ATE.CreateNewTerminal("02");
-            Terminal t3 = ATE.CreateNewTerminal("03");
+            BillingSystem BS = new BillingSystem();
+            AutomaticPhoneExchange ATE = new AutomaticPhoneExchange(BS);
+            var lite = new Rate("Lite", 4, 2);
+            var introvert = new Rate("Introvert", 6, 0);
+            ATE.AddNewRate(lite);
+            ATE.AddNewRate(introvert);
+            Terminal t1 = ATE.ConcludeContract("Mihail","01", 20, lite);
+            Terminal t2 = ATE.ConcludeContract("Igor", "02", 30, lite);
+            Terminal t3 = ATE.ConcludeContract("Oksana", "03", 25, lite);
             t1.TurnOn();
             t2.TurnOn();
             t3.TurnOn();
             t1.Call("02");
             t3.Call("01");
+            t1.EndCall();
+            t1.GetRateInfo();
+            t1.ChangeRate("introvert");
+            
             Console.ReadLine();
         }
     }
