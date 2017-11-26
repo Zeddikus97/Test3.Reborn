@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Project3.NewEventArgs
 {
-    class ResponseStateEventArgs
+    class ResponseToCallEventArgs
     {
         public AbonentStatus Status { get; private set; }
 
-        public ResponseStateEventArgs(AbonentStatus status)
+        public ResponseToCallEventArgs(AbonentStatus status)
         {
             Status = status;
         }

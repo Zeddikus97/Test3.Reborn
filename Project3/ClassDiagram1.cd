@@ -11,9 +11,10 @@
   <Class Name="Project3.BillingSystem" Collapsed="true">
     <Position X="7.5" Y="1" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAIAAAAAAAAAABAQAAAABAQAAAAAAAAEAAAAAABQIAA=</HashCode>
       <FileName>BillingSystemModel\Classes\BillingSystem.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Project3.BillingSystemModel.ConversationRecord" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="7.5" Y="2" Width="1.5" />

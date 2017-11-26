@@ -11,18 +11,16 @@ namespace Project3.APEModel.Classes
 {
     class AutomaticPhoneExchange
     {
-        private string _num = "0";
         private ICollection<Port> _freePorts = new List<Port>();
         private IDictionary<Contract, Port> _contracts = new Dictionary<Contract, Port>();
         private ICollection<CallConnection> _connections = new List<CallConnection>();
 
 
-        public void CreateCallConnection(object sender, CallEventArgs e)
+        private void CreateCallConnection(object sender, CallEventArgs e)
         {
-           
+            Console.WriteLine("ixhto");
             if (_contracts.Keys.Select(x=>x.Number).Contains(e.ReceivingPhoneNumber))
             {               
-                Console.WriteLine(_contracts.Keys.Select(x => x.Number).Contains(e.ReceivingPhoneNumber));
                 Port receivingPort = _contracts[_contracts.Keys.Where(x => x.Number == e.ReceivingPhoneNumber).First()];
                 if (receivingPort.GetPortStatus()==PortStatus.Available)
                 {
@@ -34,23 +32,32 @@ namespace Project3.APEModel.Classes
                         _connections.Add(new CallConnection(e.OutgoingPhoneNumber, e.ReceivingPhoneNumber, DateTime.Now));
                         Console.WriteLine(String.Join(" ", e.OutgoingPhoneNumber + e.ReceivingPhoneNumber + DateTime.Now));
                     }
-                }
-                if (receivingPort.GetPortStatus() == PortStatus.Busy)
+                }                
+                else if (receivingPort.GetPortStatus() == PortStatus.Busy || receivingPort.GetPortStatus() == PortStatus.IncomingCall)
                 {
-
-                    
+                    if (sender is Port) (sender as Port).MessageToTerminal("Subscriber with this number is busy now");                    
                 }
-
+                else if (receivingPort.GetPortStatus() == PortStatus.DisconnectedFromTerminal)
+                {
+                    if (sender is Port) (sender as Port).MessageToTerminal("Subscriber with this number is disconnected now");
+                }
+            }
+            else
+            {
+                if (sender is Port) (sender as Port).MessageToTerminal("Subscriber with this number doesn't exist");
             }
         }
 
         public void BreakCallConnection(object sender, EndCallEventArgs e)
         {
-            /*if (_connections.Select(x=>x.OutgoingPhoneNumber).Contains(e.OutgoingPhoneNumber)||_connections.Select(x => x.ReceivingPhoneNumber).Contains(e.OutgoingPhoneNumber))
+            if (_connections.Select(x=>x.OutgoingPhoneNumber).Contains(e.OutgoingPhoneNumber)||_connections.Select(x => x.ReceivingPhoneNumber).Contains(e.OutgoingPhoneNumber))
             {
-                _contracts[_contracts.Keys.Where(x => x.Number == e.OutgoingPhoneNumber).First()].ChangePortStatus(PortStatus.Available);
-                _contracts[_contracts.Keys.Where(x => x.Number == e.ReceivingPhoneNumber).First()].ChangePortStatus(PortStatus.Available);
-            }*/
+                _connections.Where(x => x.OutgoingPhoneNumber == e.OutgoingPhoneNumber||x.ReceivingPhoneNumber == e.OutgoingPhoneNumber)
+
+                /*_contracts[_contracts.Keys.Where(x => x.Number == e.OutgoingPhoneNumber).First()].ChangePortStatus(PortStatus.Available);
+                _contracts[_contracts.Keys.Where(x => x.Number == e.ReceivingPhoneNumber).First()].ChangePortStatus(PortStatus.Available);*/
+            }
+
         }
 
         public void AddNewPort()

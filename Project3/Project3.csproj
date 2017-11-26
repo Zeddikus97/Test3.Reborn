@@ -58,7 +58,8 @@
     <Compile Include="NewEventArgs\CallEventArgs.cs" />
     <Compile Include="NewEventArgs\EndCallEventArgs.cs" />
     <Compile Include="NewEventArgs\IncomingCallEventArgs.cs" />
-    <Compile Include="NewEventArgs\ResponseStateEventArgs.cs" />
+    <Compile Include="NewEventArgs\MessageEventArgs.cs" />
+    <Compile Include="NewEventArgs\ResponseToCallEventArgs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

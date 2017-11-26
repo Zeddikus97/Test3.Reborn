@@ -11,7 +11,7 @@ namespace Project3.APEModel.Classes
     class Port
     {
         private PortStatus _portStatus;
-        public AbonentStatus ResponseStatus { get; set; }
+        public AbonentStatus ResponseStatus { get; private set; }
 
         public Port(PortStatus portStatus)
         {
@@ -20,6 +20,7 @@ namespace Project3.APEModel.Classes
 
         public event EventHandler<CallEventArgs> CallConnectEvent;
         public event EventHandler<IncomingCallEventArgs> TakeCallConnectEvent;
+        public event EventHandler<MessageEventArgs> TakeIncomingMessageEvent;
         public event EventHandler<EndCallEventArgs> EndCallConnectEvent;
 
         public PortStatus GetPortStatus()
@@ -35,8 +36,8 @@ namespace Project3.APEModel.Classes
                 terminal.EndCallEvent += EndCallConnectEvent;
                 terminal.ResponseToCallEvent += ResponseToCall;
                 _portStatus = PortStatus.Available;
-            }
-
+                ResponseStatus = AbonentStatus.Abandoned;
+           }
         }
 
         public void ChangePortStatus(PortStatus status)
@@ -67,11 +68,16 @@ namespace Project3.APEModel.Classes
 
         protected virtual void RaiseTakeCallConnectEvent(string outgoingPhoneNumber)
         {
-            if (CallConnectEvent != null)
+            if (TakeCallConnectEvent != null)
             {
                 ChangePortStatus(PortStatus.IncomingCall);
                 TakeCallConnectEvent(this, new IncomingCallEventArgs(outgoingPhoneNumber));
             }
+        }
+
+        protected virtual void RaiseTakeImcomingMessage(string message)
+        {
+            TakeIncomingMessageEvent?.Invoke(this, new MessageEventArgs(message));
         }
 
         private void CallConnectToATE(object sender, CallEventArgs e)
@@ -79,12 +85,17 @@ namespace Project3.APEModel.Classes
             RaiseCallConnectEvent(e.OutgoingPhoneNumber, e.ReceivingPhoneNumber);
         }
 
-        private void ResponseToCall(object sender, ResponseStateEventArgs e)
+        private void ResponseToCall(object sender, ResponseToCallEventArgs e)
         {
             ChangeResponse(e.Status);
         }
 
         public void CallConnectToTerminal(string incomingNumber)
+        {
+            RaiseTakeCallConnectEvent(incomingNumber);
+        }
+
+        public void MessageToTerminal(string incomingNumber)
         {
             RaiseTakeCallConnectEvent(incomingNumber);
         }
