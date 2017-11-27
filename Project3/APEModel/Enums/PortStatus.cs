@@ -11,7 +11,6 @@ namespace Project3.APEModel.Enums
         Available,
         IncomingCall,
         Busy,
-        DisconnectedFromTerminal,
-        Unavailable
+        DisconnectedFromTerminal
     }
 }

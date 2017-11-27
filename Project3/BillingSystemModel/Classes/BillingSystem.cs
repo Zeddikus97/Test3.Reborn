@@ -14,17 +14,26 @@ namespace Project3
 
         public string GetIncomingCallsHistory(string number)
         {
-            return String.Join("\n", _records.Where(x=>x.ReceivingPhoneNumber == number).Select(x => "from " + x.OutgoingPhoneNumber + " // " + x.ToString(false)));
+            return String.Join("\n", _records.Where(x=>x.ReceivingPhoneNumber == number)
+                .Select(x => "from " + x.OutgoingPhoneNumber + " // " + x.ToString(false)));
         }
 
         public string GetOutgoingCallsHistory(string number)
         {
-            return String.Join("\n", _records.Where(x => x.OutgoingPhoneNumber == number).Select(x => "to " + x.ReceivingPhoneNumber + " // " + x.ToString(true)));
+            return String.Join("\n", _records.Where(x => x.OutgoingPhoneNumber == number)
+                .Select(x => "to " + x.ReceivingPhoneNumber + " // " + x.ToString(true)));
         }
 
         public string GetAllCallsHistory(string number)
         {
-            return String.Join("\n", _records.Where(x => x.OutgoingPhoneNumber == number || x.ReceivingPhoneNumber == number).Select(x => "from " + x.OutgoingPhoneNumber + " to " + x.ReceivingPhoneNumber + " // " + x.ToString(true)));
+            return String.Join("\n", _records.Where(x => x.OutgoingPhoneNumber == number || x.ReceivingPhoneNumber == number)
+                .Select(x => "from " + x.OutgoingPhoneNumber + " to " + x.ReceivingPhoneNumber + " // " + x.ToString(true)));
+        }
+
+
+        public IEnumerable<ICallRecord> Get()
+        {
+            return _records;
         }
 
         public void Clear()

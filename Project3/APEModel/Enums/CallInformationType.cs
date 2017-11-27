@@ -10,6 +10,7 @@ namespace Project3.APEModel.Enums
     {
         Incoming,
         Outgoing,
-        All   
+        All,
+        Filtered,   
     }
 }

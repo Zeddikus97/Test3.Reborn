@@ -25,7 +25,7 @@ namespace Project3.APEModel.Classes
 
         private void CreateCallConnection(object sender, CallEventArgs e)
         {
-            if (e.ReceivingPhoneNumber==e.OutgoingPhoneNumber)
+            if (e.ReceivingPhoneNumber==e.OutgoingPhoneNumber|| (sender as Port).GetPortStatus()==PortStatus.IncomingCall)
             {
                 if (sender is Port) (sender as Port).MessageToTerminal("Connection failed");
             }
@@ -49,7 +49,7 @@ namespace Project3.APEModel.Classes
                     }
                     else
                     {
-                        if (sender is Port) (sender as Port).MessageToTerminal("Abonent ignored this call");
+                        if (sender is Port) (sender as Port).MessageToTerminal("Subscriber ignored this call");
                         AddCallRecord(connection);
                     }
                 }                
@@ -95,6 +95,8 @@ namespace Project3.APEModel.Classes
                 if (sender is Port) (sender as Port).MessageToTerminal(ThisBillingSystem.GetOutgoingCallsHistory(e.OutgoingPhoneNumber));
             if (e.Type == CallInformationType.All)
                 if (sender is Port) (sender as Port).MessageToTerminal(ThisBillingSystem.GetAllCallsHistory(e.OutgoingPhoneNumber));
+            if (e.Type == CallInformationType.Filtered)
+                if (sender is Port) (sender as Port).CallEnumerableToTerminal(ThisBillingSystem.Get());
         }
 
         private void GetRateInformation(object sender, EventArgs e)

@@ -1,4 +1,5 @@
 ﻿using Project3.APEModel.Enums;
+using Project3.BillingSystemModel.Interfaces;
 using Project3.NewEventArgs;
 using System;
 using System.Collections.Generic;
@@ -25,8 +26,9 @@ namespace Project3.APEModel.Classes
         public event EventHandler GetRateInfoConnectEvent;
         public event EventHandler<GetCallInfoEventArgs> GetCallInfoConnectEvent;
 
+        public event EventHandler<TakeCallEnumerableEventArgs> TakeCallRecordEnumerableEvent;
         public event EventHandler<RequestEventArgs> TakeCallConnectEvent;
-        public event EventHandler<MessageEventArgs> TakeIncomingMessageEvent;
+        public event EventHandler<TakeMessageEventArgs> TakeIncomingMessageEvent;
 
         public PortStatus GetPortStatus()
         {
@@ -79,7 +81,10 @@ namespace Project3.APEModel.Classes
             GetRateInfoConnectEvent?.Invoke(this, EventArgs.Empty);
         }
 
-        protected virtual void OnGetCallInfoConnectEvent(string number, CallInformationType type)         {             GetCallInfoConnectEvent?.Invoke(this, new GetCallInfoEventArgs(number, type));         }
+        protected virtual void OnGetCallInfoConnectEvent(string number, CallInformationType type)
+        {
+            GetCallInfoConnectEvent?.Invoke(this, new GetCallInfoEventArgs(number, type));
+        }
 
         protected virtual void OnCallConnectEvent(string outgoingPhoneNumber, string receivingPhoneNumber)
         {
@@ -95,15 +100,25 @@ namespace Project3.APEModel.Classes
             }
         }
 
-        protected virtual void OnTakeImcomingMessage(string message)
+        protected virtual void OnTakeCallRecordEnumerableEvent(IEnumerable<ICallRecord> callRecords)
         {
-            TakeIncomingMessageEvent?.Invoke(this, new MessageEventArgs(message));
+            TakeCallRecordEnumerableEvent?.Invoke(this, new TakeCallEnumerableEventArgs(callRecords));
         }
 
-        protected virtual void OnReiseBalanceConnectEvent(decimal money, string outgoingPhoneNumber)         {             ReiseBalanceConnectEvent?.Invoke(this, new ReiseBalanceEventArgs(money, outgoingPhoneNumber));         }
+        protected virtual void OnTakeImcomingMessageEvent(string message)
+        {
+            TakeIncomingMessageEvent?.Invoke(this, new TakeMessageEventArgs(message));
+        }
 
-        protected virtual void OnChangeRateConnectEvent(string rate, string outgoingPhoneNumber)         {
-            ChangeRateConnectEvent?.Invoke(this, new ChangeRateEventArgs(rate, outgoingPhoneNumber));         }
+        protected virtual void OnReiseBalanceConnectEvent(decimal money, string outgoingPhoneNumber)
+        {
+            ReiseBalanceConnectEvent?.Invoke(this, new ReiseBalanceEventArgs(money, outgoingPhoneNumber));
+        }
+
+        protected virtual void OnChangeRateConnectEvent(string rate, string outgoingPhoneNumber)
+        {
+            ChangeRateConnectEvent?.Invoke(this, new ChangeRateEventArgs(rate, outgoingPhoneNumber));
+        }
 
         private void ResponseToCall(object sender, ResponseToCallEventArgs e)
         {
@@ -142,10 +157,13 @@ namespace Project3.APEModel.Classes
 
         public void MessageToTerminal(string incomingNumber)
         {
-            OnTakeImcomingMessage(incomingNumber);
+            OnTakeImcomingMessageEvent(incomingNumber);
         }
 
-        
+        public void CallEnumerableToTerminal(IEnumerable<ICallRecord> callRecords)
+        {
+            OnTakeCallRecordEnumerableEvent(callRecords);
+        }
 
     }
 }

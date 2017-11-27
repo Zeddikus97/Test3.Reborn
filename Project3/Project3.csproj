@@ -61,7 +61,8 @@
     <Compile Include="NewEventArgs\GetCallInfoEventArgs.cs" />
     <Compile Include="NewEventArgs\IRequestEventArgs.cs" />
     <Compile Include="NewEventArgs\RequestEventArgs.cs" />
-    <Compile Include="NewEventArgs\MessageEventArgs.cs" />
+    <Compile Include="NewEventArgs\TakeCallEnumerableEventArgs.cs" />
+    <Compile Include="NewEventArgs\TakeMessageEventArgs.cs" />
     <Compile Include="NewEventArgs\ReiseBalanceEventArgs.cs" />
     <Compile Include="NewEventArgs\ResponseToCallEventArgs.cs" />
     <Compile Include="Program.cs" />
