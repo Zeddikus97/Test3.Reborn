@@ -23,6 +23,7 @@ namespace Project3.APEModel.Classes
         public event EventHandler<ChangeRateEventArgs> ChangeRateConnectEvent;
         public event EventHandler<ReiseBalanceEventArgs> ReiseBalanceConnectEvent;
         public event EventHandler GetRateInfoConnectEvent;
+        public event EventHandler<GetCallInfoEventArgs> GetCallInfoConnectEvent;
 
         public event EventHandler<RequestEventArgs> TakeCallConnectEvent;
         public event EventHandler<MessageEventArgs> TakeIncomingMessageEvent;
@@ -52,6 +53,7 @@ namespace Project3.APEModel.Classes
                 terminal.GetRateInfoEvent += GetRateInfoFromATE;
                 terminal.ChangeRateEvent += ChangeRateFromTerminal;
                 terminal.ReiseBalanceEvent += ReiseBalanceFromTerminal;
+                terminal.GetCallInfoEvent += GetCallInfoFromATE;
                 _portStatus = PortStatus.Available;
                 ResponseStatus = AbonentStatus.Abandoned;
            }
@@ -67,6 +69,7 @@ namespace Project3.APEModel.Classes
                 terminal.GetRateInfoEvent -= GetRateInfoFromATE;
                 terminal.ChangeRateEvent -= ChangeRateFromTerminal;
                 terminal.ReiseBalanceEvent -= ReiseBalanceFromTerminal;
+                terminal.GetCallInfoEvent -= GetCallInfoFromATE;
                 _portStatus = PortStatus.DisconnectedFromTerminal;
             }
         }
@@ -75,6 +78,8 @@ namespace Project3.APEModel.Classes
         {
             GetRateInfoConnectEvent?.Invoke(this, EventArgs.Empty);
         }
+
+        protected virtual void OnGetCallInfoConnectEvent(string number, CallInformationType type)         {             GetCallInfoConnectEvent?.Invoke(this, new GetCallInfoEventArgs(number, type));         }
 
         protected virtual void OnCallConnectEvent(string outgoingPhoneNumber, string receivingPhoneNumber)
         {
@@ -108,6 +113,11 @@ namespace Project3.APEModel.Classes
         private void GetRateInfoFromATE(object sender, EventArgs e)
         {
             OnGetRateInfoConnectEvent();
+        }
+
+        private void GetCallInfoFromATE(object sender, GetCallInfoEventArgs e)
+        {
+           OnGetCallInfoConnectEvent(e.OutgoingPhoneNumber, e.Type);
         }
 
         private void CallConnectToATE(object sender, CallEventArgs e)

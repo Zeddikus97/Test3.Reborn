@@ -33,7 +33,8 @@ namespace Project3.APEModel.Classes
             {
                 var connection = new CallRecord(e.OutgoingPhoneNumber, e.ReceivingPhoneNumber, DateTime.Now);
                 Port receivingPort = _contracts[_contracts.Keys.Where(x => x.Number == e.ReceivingPhoneNumber).First()];
-                if (!(_contracts.Keys.Where(x => x.Number == e.ReceivingPhoneNumber).First().Balance>0))
+                _contracts.Keys.Where(x => x.Number == e.OutgoingPhoneNumber).First().Exact(DateTime.Now);
+                if (!(_contracts.Keys.Where(x => x.Number == e.OutgoingPhoneNumber).First().Balance>0))
                 {
                     if (sender is Port) (sender as Port).MessageToTerminal("You doesn't have enough money. Please, reise the balance.");
                 }                  
@@ -45,6 +46,11 @@ namespace Project3.APEModel.Classes
                         _contracts[_contracts.Keys.Where(x => x.Number == e.OutgoingPhoneNumber).First()].ChangePortStatus(PortStatus.Busy);
                         _contracts[_contracts.Keys.Where(x => x.Number == e.ReceivingPhoneNumber).First()].ChangePortStatus(PortStatus.Busy);
                         _connections.Add(connection);
+                    }
+                    else
+                    {
+                        if (sender is Port) (sender as Port).MessageToTerminal("Abonent ignored this call");
+                        AddCallRecord(connection);
                     }
                 }                
                 else if (receivingPort.GetPortStatus() == PortStatus.Busy || receivingPort.GetPortStatus() == PortStatus.IncomingCall)
@@ -68,10 +74,10 @@ namespace Project3.APEModel.Classes
         {
             if (_connections.Select(x=>x.OutgoingPhoneNumber).Contains(e.OutgoingPhoneNumber)||_connections.Select(x => x.ReceivingPhoneNumber).Contains(e.OutgoingPhoneNumber))
             {
-                var connection = _connections.Where(x => x.OutgoingPhoneNumber== e.OutgoingPhoneNumber || x.ReceivingPhoneNumber == e.OutgoingPhoneNumber).First();
-                var cost = _contracts.Keys.Where(x => x.Number == e.OutgoingPhoneNumber).First().ChangeBalance(DateTime.Now - connection.Date);
+                var connection = _connections.Where(x => x.OutgoingPhoneNumber == e.OutgoingPhoneNumber || x.ReceivingPhoneNumber == e.OutgoingPhoneNumber).First();
+                var cost = _contracts.Keys.Where(x => x.Number == connection.OutgoingPhoneNumber).First().ChangeBalance(DateTime.Now - connection.Date);
                 ThisBillingSystem.Add(new ConversationRecord(connection.OutgoingPhoneNumber, connection.ReceivingPhoneNumber, connection.Date, DateTime.Now - connection.Date, cost));
-                Console.WriteLine(ThisBillingSystem.GetIncomingCallsHistory());
+                
                 _contracts[_contracts.Keys.Where(x => x.Number == connection.ReceivingPhoneNumber).First()].ChangePortStatus(PortStatus.Available);
                 if (_contracts[_contracts.Keys.Where(x => x.Number == connection.OutgoingPhoneNumber).First()].GetPortStatus() != PortStatus.DisconnectedFromTerminal)
                 {
@@ -79,6 +85,16 @@ namespace Project3.APEModel.Classes
                 }
                 _connections.Remove(connection);              
             }
+        }
+
+        private void GetCallInformation(object sender, GetCallInfoEventArgs e)
+        {
+            if (e.Type==CallInformationType.Incoming)
+                if (sender is Port) (sender as Port).MessageToTerminal(ThisBillingSystem.GetIncomingCallsHistory(e.OutgoingPhoneNumber));
+            if (e.Type == CallInformationType.Outgoing)
+                if (sender is Port) (sender as Port).MessageToTerminal(ThisBillingSystem.GetOutgoingCallsHistory(e.OutgoingPhoneNumber));
+            if (e.Type == CallInformationType.All)
+                if (sender is Port) (sender as Port).MessageToTerminal(ThisBillingSystem.GetAllCallsHistory(e.OutgoingPhoneNumber));
         }
 
         private void GetRateInformation(object sender, EventArgs e)
@@ -98,7 +114,8 @@ namespace Project3.APEModel.Classes
             if (rateForChange != null)
             {
                 var contract = _contracts.Keys.Where(x => x.Number == e.OutgoingPhoneNumber).First();
-                if (contract.RateChangeDate.Year != DateTime.Now.Year || contract.RateChangeDate.Month - DateTime.Now.Month < -1 || contract.RateChangeDate.Day == DateTime.Now.Day - 1 || (contract.RateChangeDate.Month == 2 && DateTime.Now.Day > 28))
+                
+                if (((DateTime.Now.Month - contract.RateChangeDate.Month) + 12* (DateTime.Now.Month - contract.RateChangeDate.Year))>1)
                 {
                     _contracts.Keys.Where(x => x.Number == e.OutgoingPhoneNumber).First().RateChange(rateForChange);
                 }
@@ -135,6 +152,7 @@ namespace Project3.APEModel.Classes
             newPort.GetRateInfoConnectEvent += GetRateInformation;
             newPort.ReiseBalanceConnectEvent += ReiseBalance;
             newPort.ChangeRateConnectEvent += ChangeContractRate;
+            newPort.GetCallInfoConnectEvent += GetCallInformation;
             _freePorts.Add(newPort);
         }
 
@@ -149,7 +167,7 @@ namespace Project3.APEModel.Classes
 
         public Terminal ConcludeContract(string name, string number, decimal balance, Rate rate)
         {
-            Contract newContract = new Contract(name, number, balance, DateTime.Now, rate);
+            Contract newContract = new Contract(name, number, balance, DateTime.Now, DateTime.Now, rate);
             return CreateNewTerminal(number, newContract);    
         }
     }

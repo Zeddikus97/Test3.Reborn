@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project3.NewEventArgs
+namespace Project3.APEModel.Enums
 {
-    interface IRequestEventArgs 
+    enum CallInformationType
     {
-        string OutgoingPhoneNumber { get; }
+        Incoming,
+        Outgoing,
+        All   
     }
 }

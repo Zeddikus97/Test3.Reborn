@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="APEModel\Enums\CallInformationType.cs" />
     <Compile Include="APEModel\Classes\AutomaticPhoneExchange.cs" />
     <Compile Include="APEModel\Classes\Contract.cs" />
     <Compile Include="APEModel\Classes\Port.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="BillingSystemModel\Interfaces\IConversationRecord.cs" />
     <Compile Include="NewEventArgs\CallEventArgs.cs" />
     <Compile Include="NewEventArgs\ChangeRateEventArgs.cs" />
+    <Compile Include="NewEventArgs\GetCallInfoEventArgs.cs" />
     <Compile Include="NewEventArgs\IRequestEventArgs.cs" />
     <Compile Include="NewEventArgs\RequestEventArgs.cs" />
     <Compile Include="NewEventArgs\MessageEventArgs.cs" />
